@@ -27,4 +27,6 @@ urlpatterns = [
 
     path('copy/<int:pk>/', views.QuestionCopy, name='question-copy'),
     path('generate/<int:pk>/', views.QuestionGenerate, name='question-generate'),
+    path('answer/check/<int:pk>/', views.questionCheckAnswer, name='question-answer-check'),
+    # path('answer/display/', views.questionAnswerDisplay, name='question-answer-display'),
 ]

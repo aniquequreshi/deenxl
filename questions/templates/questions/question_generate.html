@@ -1,18 +1,35 @@
 {% extends "questions/base.html" %}
 
-{% block title %}Question List{% endblock %}
+{% block title %}Question Generated{% endblock %}
 
 {% block content %}
 
 <body>
-
+<h3>Teacher Question Display</h3>
+<br>
+<form method="post" action="{% url 'questions:question-answer-check' question.pk %}">
+{% csrf_token %}
    <h5> {{ question.question_text }}</h5>
-    <ol>
-    {% for choice in all_choices %}
-        <li>{{ choice.choice }}</li>
-    {% endfor %}
-    </ol>
 
+    {% for choice in all_choices %}
+        <label><input type="radio" required name="displayed_choices" id="id_{{ choice.choice }}" value="{{ choice.choice }}">{{ choice.choice }}</label>
+        <br>
+    {% endfor %}
+
+{#    <input type="submit" value="Submit>#}
+    <button type="submit">Submit</button>
+
+</form>
+<br>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<br>
     <h6>Correct Answer: {{ question.choice }}</h6>
 
     <button class="btn btn-outline-primary btn-sm"><a href="{% url 'questions:question-generate' question.pk %}">Generate Another Version</a></button>

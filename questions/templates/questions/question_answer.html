@@ -1,0 +1,31 @@
+{% extends "questions/base.html" %}
+
+{% block title %}Question Answer{% endblock %}
+
+{% block content %}
+
+<body>
+<h3>Teacher Solution Display</h3>
+<br>
+{#<form method="post" action="{% url 'questions:question-answer' question.pk %}">#}
+{#{% csrf_token %}#}
+   <h5> {{ question.question_text }}</h5>
+You answered: {{ given_answer }}
+<br>
+Correct answer: {{ correct_answer }}
+<br>
+<br>
+Your answer is:
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+    <button class="btn btn-outline-primary btn-sm"><a href="{% url 'questions:question-list' %}">Back to Question List</a></button>
+</body>
+
+
+{% endblock %}

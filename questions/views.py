@@ -5,11 +5,13 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, UpdateView, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from random import randint, shuffle
+from django.contrib import messages
 
 from .models import Question, Choice, ChoiceGroup, Subject
 from .forms import QuestionForm
 # , ChoiceForm
 from django.forms import inlineformset_factory
+
 
 # Delete Questions, then Choices, then Groups
 def index_view(request):
@@ -35,6 +37,7 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+
 class QuestionUpdateView(LoginRequiredMixin, UpdateView):
     model = Question
     form_class = QuestionForm
@@ -47,6 +50,7 @@ class QuestionUpdateView(LoginRequiredMixin, UpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+
 class QuestionListView(LoginRequiredMixin, ListView):
     model = Question
 
@@ -54,6 +58,7 @@ class QuestionListView(LoginRequiredMixin, ListView):
         user = self.request.user
         question_list = Question.objects.filter(created_by=user)
         return question_list
+
 
 # class QuestionDetailView(LoginRequiredMixin, DetailView):
 #     model = Question
@@ -92,10 +97,12 @@ class ChoiceGroupCreateView(LoginRequiredMixin, CreateView):
         context["objects"] = self.model.objects.filter(created_by=self.request.user)
         return context
 
+
 class ChoiceGroupUpdateView(LoginRequiredMixin, UpdateView):
     model = ChoiceGroup
     fields = ('choice_group',)
     success_url = reverse_lazy('questions:choice-group-create')
+
 
 # Works but don't need it
 # class ChoiceGroupListView(LoginRequiredMixin, ListView):
@@ -139,15 +146,15 @@ def ChoiceCreateView(request, pk):
     choice_group = ChoiceGroup.objects.get(id=pk)
 
     if request.method == 'POST':
-        formset = ChoiceFormSet(request.POST, instance = choice_group)
+        formset = ChoiceFormSet(request.POST, instance=choice_group)
         if formset.is_valid():
             formset.save()
-            return redirect('questions:choice-create', pk = choice_group.id)
+            return redirect('questions:choice-create', pk=choice_group.id)
 
     # IMPORTANT: Change queryset objects.none() to not show older items in list
     # formset = ChoiceFormSet(queryset=Choice.objects.none(),instance=choice_group)
     formset = ChoiceFormSet(queryset=Choice.objects.all(), instance=choice_group)
-    context = {'formset': formset, 'choice_group':choice_group}
+    context = {'formset': formset, 'choice_group': choice_group}
     return render(request, 'questions/choice_form.html', context)
 
 
@@ -190,21 +197,38 @@ def QuestionCopy(request, pk):
     #         formset.save()
     #         return redirect('questions:choice-create', pk = choice_group.id)
 
-    return redirect('questions:question-update', pk = question.id)
+    return redirect('questions:question-update', pk=question.id)
     # return render(request, "questions/question_copy.html", context)
     # questions / question_form.html
+
 
 def QuestionGenerate(request, pk):
     question = Question.objects.get(id=pk)
     choice_group = question.choice_group
     correct_choice = question.choice
     # Below is needed to create a Queryset for combining
-    correct_choice_qs = Choice.objects.filter(choice_group = choice_group, choice = correct_choice).order_by("?")[:1]
-    wrong_choices = Choice.objects.filter(choice_group = choice_group).exclude(choice = correct_choice).order_by("?")[:4]
+    correct_choice_qs = Choice.objects.filter(choice_group=choice_group, choice=correct_choice).order_by("?")[:1]
+    wrong_choices = Choice.objects.filter(choice_group=choice_group).exclude(choice=correct_choice).order_by("?")[:4]
     all_choices = correct_choice_qs | wrong_choices
 
     all_choices_list = list(all_choices)
     shuffle(all_choices_list)
 
-    context = {'question':question, 'all_choices': all_choices_list}
+    context = {'question': question, 'all_choices': all_choices_list}
     return render(request, "questions/question_generate.html", context)
+
+
+def questionCheckAnswer(request, pk):
+    question = Question.objects.get(id=pk)
+    correct_answer = question.choice.choice
+    data = request.POST
+    given_answer = data.get('displayed_choices')
+    context ={'question': question, 'given_answer': given_answer, 'correct_answer': correct_answer}
+    if given_answer == correct_answer:
+        messages.add_message(request, messages.INFO, 'CORRECT')
+        # return redirect('questions:question-list')
+    else:
+        messages.add_message(request, messages.INFO, 'WRONG')
+       # return redirect('questions:question-update', pk = pk )
+    return render(request, 'questions/question_answer.html', context)
+
