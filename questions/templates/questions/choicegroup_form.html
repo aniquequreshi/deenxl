@@ -1,0 +1,43 @@
+{% extends "questions/base.html" %}
+
+{% block title %}Choice Group Edit{% endblock %}
+
+{% block content %}
+<body>
+    <br>
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+
+    <input type="submit" value="Submit">
+</form>
+<br>
+
+{#    <table class="table table-bordered table-sm ">#}
+        <table id="myTable" class="hover compact cell-border" data-page-length='20' style="width:100%">
+        <thead>
+        <tr>
+            <td>Choice Group</td>
+            <td>Action</td>
+        </tr>
+        </thead>
+            {% for cg in objects %}
+            <tr>
+                <td><a href="{% url 'questions:choice-create' cg.pk %}">{{ cg.choice_group }}</a></td>
+                <td><button class="btn btn-outline-secondary btn-sm"><a href="{% url 'questions:choice-group-update' cg.pk %}">Rename</a></button></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+       <script>
+        $(document).ready( function () {
+            {#$('#myTable').DataTable();#}
+
+            $('#myTable').DataTable({
+                "order": [0, "desc"]  //sort order 0 based columns
+                {#"order": [[0, "desc"], [1, "asc"]]  //sort order 0 based columns#}
+            });
+        })
+    </script>
+</body>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "questions/base.html" %}
+
+{% block title %}Question List{% endblock %}
+
+{% block content %}
+
+<body>
+
+   <h5> {{ question.question_text }}</h5>
+    <ol>
+    {% for choice in all_choices %}
+        <li>{{ choice.choice }}</li>
+    {% endfor %}
+    </ol>
+
+    <h6>Correct Answer: {{ question.choice }}</h6>
+
+    <button class="btn btn-outline-primary btn-sm"><a href="{% url 'questions:question-generate' question.pk %}">Generate Another Version</a></button>
+</body>
+
+
+{% endblock %}

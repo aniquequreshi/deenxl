@@ -1,0 +1,28 @@
+{% extends "questions/base.html" %}
+
+{% block title %}Choice Edit{% endblock %}
+
+{% block content %}
+
+
+<form method="post">
+    {% csrf_token %}
+<h3>{{ choice_group.choice_group }}</h3>
+    {{ formset.management_form }}
+
+{{ formset.forms.reverse }}
+<br>
+        {% for form in formset %}
+            {{ form }}
+            <hr>
+        {% endfor %}
+
+
+
+
+
+    <input type="submit" value="Submit">
+
+</form>
+
+{% endblock %}

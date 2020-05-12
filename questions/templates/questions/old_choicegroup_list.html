@@ -1,0 +1,25 @@
+{% extends "questions/base.html" %}
+
+{% block title %}Choice Group List{% endblock %}
+
+{% block content %}
+
+<body>
+
+    <table>
+    {% for cg in object_list %}
+        <tr>
+{#            <td>{{ cg.choice_group }}</td>#}
+            <td><button><a href="{% url 'questions:choice-create' cg.pk %}">Edit</a></button></td>
+            <td><a href="{% url 'questions:choice-group-update' cg.pk %}">{{ cg.choice_group }}</a></td>
+
+        </tr>
+    {% empty %}
+        <tr><td>No Choice Groups yet.</td></tr>
+    {% endfor %}
+    </table>
+
+</body>
+
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "questions/base.html" %}
+
+{% block title %}Question List{% endblock %}
+
+{% block content %}
+
+<body>
+    <table id="myTable" class="hover compact cell-border" data-page-length='20' style="width:100%">
+{#    <table class="table table-bordered table-sm ">#}
+    <thead>
+        <tr>
+            <td>Question</td>
+            <td>Correct Choice</td>
+            <td>Choice Group</td>
+            <td>Action</td>
+        </tr>
+    </thead>
+    <tbody>
+    {% for question in object_list %}
+        <tr>
+            <td><a href="{% url 'questions:question-update' question.pk %}">{{ question.question_text }}</a></td>
+            <td>{{ question.choice }}</td>
+            <td>{{ question.choice_group }}</td>
+            <td>
+                <button class="btn btn-outline-secondary btn-sm"><a href="{% url 'questions:question-copy' question.pk %}">Copy</a></button>
+                <button class="btn btn-outline-primary btn-sm"><a href="{% url 'questions:question-generate' question.pk %}">Generate</a></button>
+            </td>
+
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
+    <script>
+        $(document).ready( function () {
+            {#$('#myTable').DataTable();#}
+
+            $('#myTable').DataTable({
+                "order": [0, "asc"]  //sort order 0 based columns
+                {#"order": [[0, "desc"], [1, "asc"]]  //sort order 0 based columns#}
+            });
+        })
+    </script>
+</body>
+
+
+{% endblock %}
